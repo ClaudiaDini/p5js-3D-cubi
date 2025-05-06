@@ -1,40 +1,73 @@
+/**
+ * @typedef {import("./p5/types").Graphics} Graphics
+ * @typedef {Object} Cubo
+ * @property {number} x
+ * @property {number} y
+ * @property {number} z
+ * @property {number} size
+ * @property {string} color
+ * @property {function} rotationFunction
+ */
+
+//
+
+/**@type {Cubo[]}*/
 let cubi = [];
+
 let copie = 30;
+
+/** @type {Graphics} */
+let g;
+let font;
+let immagineSadCat;
+
+//
+
+function preload() {
+  font = loadFont("Minecraft.ttf");
+  immagineSadCat = loadImage("sad cat.PNG");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight, "webgl");
 
+  g = createGraphics(100, 100);
+
+  let distanza = 500;
   for (let i = 0; i < copie; i++) {
     let cubo = {
-      x: random(-1000, 1000),
-      y: random(-1000, 1000),
-      z: random(-1000, 1000),
+      x: random(-distanza, distanza),
+      y: random(-distanza, distanza),
+      z: random(-distanza, distanza),
       size: 100,
       color: random(["pink", "blue", "red"]),
       //rotationAxis : random (["x", "y", "z"]),
-      rotationFunction: random([rotateX, rotateY, rotateZ]),
+      rotationFunction: random([rotateX, rotateY]),
     };
     cubi.push(cubo);
   }
 }
 
 function draw() {
-  background(0);
+  background("black");
   orbitControl();
+  rotateY(frameCount * 0.001);
+  noStroke();
+
+  g.background(immagineSadCat);
+  g.text("SADCAT", 0, g.height);
+  g.textSize(g.height / 4);
+  g.textFont(font);
+  texture(g);
 
   for (let cubo of cubi) {
     push();
     translate(cubo.x, cubo.y, cubo.z);
-    cubo.rotationFunction(frameCount / 10);
-    //if (cubo.rotationAxis == "x") {
-    //rotateX(frameCount / 10);
-    //} else if (cubo.rotationAxis == "y") {
-    //  rotateY(frameCount / 20);
-    //} else (cubo.rotationAxis == "z") {
-    //  rotateZ(frameCount * 10);
-    //}
 
-    fill(cubo.color);
+    let velocita = frameCount * 0.005;
+    cubo.rotationFunction(velocita);
+    rotateZ(velocita);
+
     box(cubo.size);
     pop();
   }
